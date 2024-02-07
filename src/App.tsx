@@ -1,25 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+
+function Button({onClick} : any) {
+ 
+
+  //un componente riceve i parametri tramite un oggetto, quando noi definiamo una funzione, passiamo un oggetto che può chiamarsi come vogliamo (props).
+  //Se voglio far sì che cliccando mi spunti un valore randomico devo gestire lo stato nel livello più alto. se fosse un componente più strutturato 
+
+  return (
+    <>
+      {" "}
+      <button
+        onClick={onClick} //così passiamo il parametro al bottone
+      >
+        Genera numero
+      </button>
+    </>
+  );
+}
+
+interface PropsLabel {
+  children: JSX.Element; //oppure ReactNode, se mettessumo return ( {null} ) possiamo usare ReactNode
+}
+//se label passa la prop a un subLabel
+function Label({children} : PropsLabel) {
+  return (
+  <>
+  <SubLabel>{children}</SubLabel>
+  </>);
+}
+
+function SubLabel({children}: PropsLabel) {
+console.log('rendering SubLabel')
+  return(
+    <>
+    {children}
+    </>
+  )
+  
+
+}
 
 function App() {
+  const [number, setNumber] = useState<number>(Math.random());
+  const onClick = () => {
+    const random: number = Math.random();
+    setNumber(random);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Button onClick={onClick} />
+      <Label><div>{number}</div></Label>
+    </>
   );
 }
 
