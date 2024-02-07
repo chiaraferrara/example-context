@@ -1,59 +1,52 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
+import { useFetch } from "./hooks/useTodoList";
 import "./App.css";
 
-function Button({onClick} : any) {
- 
-
-  //un componente riceve i parametri tramite un oggetto, quando noi definiamo una funzione, passiamo un oggetto che può chiamarsi come vogliamo (props).
-  //Se voglio far sì che cliccando mi spunti un valore randomico devo gestire lo stato nel livello più alto. se fosse un componente più strutturato 
-
-  return (
-    <>
-      {" "}
-      <button
-        onClick={onClick} //così passiamo il parametro al bottone
-      >
-        Genera numero
-      </button>
-    </>
-  );
-}
-
-interface PropsLabel {
-  children: JSX.Element; //oppure ReactNode, se mettessumo return ( {null} ) possiamo usare ReactNode
-}
-//se label passa la prop a un subLabel
-function Label({children} : PropsLabel) {
-  return (
-  <>
-  <SubLabel>{children}</SubLabel>
-  </>);
-}
-
-function SubLabel({children}: PropsLabel) {
-console.log('rendering SubLabel')
-  return(
-    <>
-    {children}
-    </>
-  )
-  
-
-}
-
 function App() {
-  const [number, setNumber] = useState<number>(Math.random());
-  const onClick = () => {
-    const random: number = Math.random();
-    setNumber(random);
-  };
+ 
+  const [dataPosts, loadingPosts, getDataPosts] = useFetch(
+    "https://jsonplaceholder.typicode.com/posts"
+  ) as any;
+  const [likes, setLikes] = useState([]) as any;
 
-  return (
-    <>
-      <Button onClick={onClick} />
-      <Label><div>{number}</div></Label>
-    </>
-  );
+  if (!!dataPosts && loadingPosts) {
+    return <div>Loading</div>;
+  } else {
+    return (
+      <>
+      <button onClick={() => getDataPosts()}>Fetch Post data</button>
+        <div>
+        <ul>
+          {likes.map((id : any) => {
+        const post = dataPosts.find((post : any) => post.id === id);
+        return(
+        <button 
+        key={id} 
+        onClick={() =>{
+          const newLikes = likes.filter((like: any) => like !== id);
+          setLikes(newLikes);
+        }}>
+          {post.title}
+          </button>
+          );
+      })}
+        </ul>
+          <ul>
+            {dataPosts.map((todo: any) => {                
+                   return( 
+                   <button 
+                   key={todo.id}
+                    onClick={() => {
+                      setLikes([...likes, todo.id]);
+                    }} disabled= {likes.includes(todo.id)}> {todo.title} 
+                  </button>
+            );
+                   })}
+          </ul>
+        </div>
+       </>
+    );
+  }
 }
 
 export default App;
